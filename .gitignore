@@ -1,0 +1,13 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.dll
+*.pdb
+
+# Angular / Node
+node_modules/
+dist/
+.env
