@@ -20,6 +20,8 @@ namespace Infrastructure.Data
         public DbSet<UserRole> UserRoles { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Product> Product { get; set; } = null!;
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ← هنا EF Core يبني الجداول الافتراضية (زي Users لو عندك Identity)

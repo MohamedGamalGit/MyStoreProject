@@ -50,6 +50,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile)); // MappingProfile ?? ??? Profile class ?????
+builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
 
 // ------------------- Controllers -------------------
 builder.Services.AddControllers().AddJsonOptions(options =>

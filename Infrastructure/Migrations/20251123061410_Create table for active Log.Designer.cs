@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251123061410_Create table for active Log")]
+    partial class CreatetableforactiveLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,22 +43,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("EntityName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IpAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Method")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.PrimitiveCollection<string>("Roles")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StatusCode")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")

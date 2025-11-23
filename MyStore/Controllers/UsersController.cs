@@ -3,7 +3,9 @@ using Commen.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Models.Models;
 using Services.Interfaces;
+using Services.Services;
 using static Commen.Helpers.Helper;
 
 namespace MyStore.Controllers
@@ -15,11 +17,13 @@ namespace MyStore.Controllers
     {
         private readonly IUserService _userService;
         private readonly JwtHelper _jwtHelper;
+        private readonly IActivityLogService _activityLogService;
 
-        public UsersController(IUserService userService, JwtHelper jwtHelper)
+        public UsersController(IUserService userService, JwtHelper jwtHelper, IActivityLogService activityLogService)
         {
             _userService = userService;
             _jwtHelper = jwtHelper;
+            _activityLogService = activityLogService;
         }
         [AllowAnonymous]
         [HttpPost("login")]
@@ -27,7 +31,20 @@ namespace MyStore.Controllers
         {
             var token = await _userService.Login(dto);
             if (token == null) return Unauthorized();
-
+            await _activityLogService.LogAsync(
+                        userId: null,
+                        userName: dto.Username,
+                        roles: null,
+                            action: "Login",
+                        entityName: "Auth",
+                        entityId: null,
+                        description: "User logged in",
+                        path: HttpContext.Request.Path,
+                        method: HttpContext.Request.Method,
+                        ip: HttpContext.Connection.RemoteIpAddress?.ToString(),
+                        status: 200,
+                        executionTime: 0
+                    );
             return Ok(token);
         }
 
@@ -61,10 +78,11 @@ namespace MyStore.Controllers
             };
         }
 
-        public class TokenRequest
-        {
-            public string RefreshToken { get; set; }
-        }
+        
 
+    }
+    public class TokenRequest
+    {
+        public string RefreshToken { get; set; }
     }
 }

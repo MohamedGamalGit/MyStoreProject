@@ -37,6 +37,8 @@ namespace MyStore.Middlewares
         {
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<ActivityLoggingMiddleware>();
+
         }
     }
 }

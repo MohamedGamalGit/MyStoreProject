@@ -39,7 +39,8 @@ namespace Commen.Helpers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("UserId", userId.ToString())
+                new Claim("UserId", userId.ToString()),
+                new Claim("UserName", username)
             };
 
             // Add roles as claims
