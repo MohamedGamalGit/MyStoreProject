@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyStore", "MyStore\MyStore.csproj", "{95B2B33A-533D-4AEB-AB4A-67B0F2E295F0}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commen", "Commen\Commen.csproj", "{D166BC31-BABF-4D5F-BBAB-B42074365A4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{4F331829-08E1-4AFB-8000-60C45D9D4876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CamundaTest", "CamundaTest\CamundaTest.csproj", "{213AAF66-3B73-48B9-AA68-9F6574E974B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{4F331829-08E1-4AFB-8000-60C45D9D4876}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F331829-08E1-4AFB-8000-60C45D9D4876}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F331829-08E1-4AFB-8000-60C45D9D4876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{213AAF66-3B73-48B9-AA68-9F6574E974B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{213AAF66-3B73-48B9-AA68-9F6574E974B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{213AAF66-3B73-48B9-AA68-9F6574E974B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{213AAF66-3B73-48B9-AA68-9F6574E974B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

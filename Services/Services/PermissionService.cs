@@ -13,7 +13,7 @@ using AutoMapper;
 
 namespace Services.Services
 {
-    public class PermissionService: IPermissionService
+    public class PermissionService : IPermissionService
     {
         private readonly StoreDbContext _ctx;
         private readonly IMapper _mapper;
@@ -140,6 +140,21 @@ namespace Services.Services
 
             return hasPermission;
         }
+        public async Task<List<RoleWithPermissionsDto>> GetUserRolesWithPermissionsAsync(Guid userId)
+        {
+            return await _ctx.UserRoles
+                                .Where(ur => ur.UserId == userId)
+                                .Select(ur => new RoleWithPermissionsDto
+                                {
+                                    RoleId = ur.Role.Id,
+                                    RoleName = ur.Role.Name,
+                                    Permissions = ur.Role.RolePageActions
+                                        .Select(rpa => rpa.PageAction.Page.DisplayName + "." + rpa.PageAction.ActionEntity.DisplayName)
+                                        .ToList()
+                                })
+                                .ToListAsync();
+
+        }
 
         public async Task AddPageAsync(PageDto dto)
         {
@@ -147,5 +162,13 @@ namespace Services.Services
             _ctx.Page.Add(model);
             await _ctx.SaveChangesAsync();
         }
+
+        public class RoleWithPermissionsDto
+        {
+            public Guid RoleId { get; set; }
+            public string RoleName { get; set; } = null!;
+            public List<string> Permissions { get; set; } = new List<string>();
+        }
+
     }
 }
