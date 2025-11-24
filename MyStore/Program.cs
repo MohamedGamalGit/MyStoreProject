@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using MyStore.Middlewares;
 using System.Text.Json;
+using Models.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile)); // MappingProfile ?? ??? Profile class ?????
 builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 // ------------------- Controllers -------------------
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -92,6 +94,11 @@ builder.Services.AddSwaggerGen(c =>
 // ------------------- Build & Middleware -------------------
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<StoreDbContext>();
+    SeedData.Seed(db);
+}
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

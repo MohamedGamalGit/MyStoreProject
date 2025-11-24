@@ -37,7 +37,7 @@ namespace MyStore.Controllers
             if (existingRole != null)
                 return BadRequest("Role already exists.");
             var model = _mapper.Map<Role>(role);
-            model.Id= Guid.NewGuid();
+            model.Id = Guid.NewGuid();
             _context.Roles.Add(model);
             await _context.SaveChangesAsync();
 
@@ -84,9 +84,22 @@ namespace MyStore.Controllers
 
                 throw;
             }
-            
-        }
 
+        }
+        [HttpGet("getAll")]
+        //[Authorize(Roles = "SuperAdmin")] // اختياري: فقط SuperAdmin يمكنه جلب الأدوار
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _context.Roles
+                .Select(r => new
+                {
+                    r.Id,
+                    r.Name
+                })
+                .ToListAsync();
+
+            return Ok(roles);
+        }
     }
 
 }

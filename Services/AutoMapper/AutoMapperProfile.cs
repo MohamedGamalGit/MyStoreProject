@@ -2,6 +2,7 @@
 using Commen.ViewModels;
 using Commen.ViewModels.RolesVM;
 using Models.Models;
+using Models.Models.Permission;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace Services.AutoMapper
             CreateMap<Product, ProductAddVM>().ReverseMap();
             CreateMap<Category, CategoryAddVM>().ReverseMap();
             CreateMap<Role, RoleAddVM>().ReverseMap();
+            CreateMap<RolePageAction, RoleAssignDto>().ReverseMap();
+            CreateMap<Page, PageDto>().ReverseMap();
         }
     }
 }

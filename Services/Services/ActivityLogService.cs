@@ -33,7 +33,7 @@ namespace Services.Services
                 Method = method,
                 IpAddress = ip,
                 StatusCode = status,
-                Timestamp = DateTime.Now,
+                Timestamp = executionTime,
                 Roles= roles
 
             };

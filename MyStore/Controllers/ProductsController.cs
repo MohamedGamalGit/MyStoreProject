@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Models;
+using MyStore.Attributes;
 using Services.Interfaces;
 
 namespace MyStore.Controllers
@@ -23,6 +24,7 @@ namespace MyStore.Controllers
         }
 
         [HttpPost, Route("addProduct")]
+        [HasPermission("Products.Create")]
         public async Task<IActionResult> AddProduct([FromBody]ProductAddVM productAddVM)
         {
             await _productService.AddProduct(productAddVM);
@@ -30,6 +32,7 @@ namespace MyStore.Controllers
         }
 
         [HttpGet, Route("getProducts")]
+        [HasPermission("Products.View")]
         public async Task<IActionResult> GetProducts()
         {
             try

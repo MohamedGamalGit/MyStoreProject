@@ -30,7 +30,7 @@ namespace Models.Models
 
         public int? StatusCode { get; set; }
 
-        public DateTime? Timestamp { get; set; } = DateTime.Now;
+        public int? Timestamp { get; set; } 
         public List<string>? Roles { get; set; } =new List<string>();
     }
 }

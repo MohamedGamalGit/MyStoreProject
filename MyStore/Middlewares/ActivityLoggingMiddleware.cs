@@ -29,6 +29,18 @@ namespace MyStore.Middlewares
                 await _next(context);
                 return;
             }
+            var ignoredPaths = new[]
+            {
+                "/api/Products/getProductsWithPagination",
+                "/api/Categories/getCategoriesWithagination",
+                "/api/Logs/activity-logs"
+            };
+
+            if (ignoredPaths.Any(p => request.Path.StartsWithSegments(p)) && request.Method == "POST")
+            {
+                await _next(context);
+                return;
+            }
             var userName = context.User?.FindFirst("UserName")?.Value;
 
             // الدور (Roles)
@@ -70,7 +82,7 @@ namespace MyStore.Middlewares
                 method: request.Method,
                 ip: context.Connection.RemoteIpAddress?.ToString(),
                 status: statusCode,
-                executionTime: (int)stopwatch.ElapsedMilliseconds,
+                executionTime: (int)stopwatch.Elapsed.TotalSeconds,
                 roles: roleNames
             );
         }
