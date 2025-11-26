@@ -26,6 +26,7 @@ namespace Infrastructure.Data
         public DbSet<ActionEntity> ActionEntity => Set<ActionEntity>();
         public DbSet<PageAction> PageAction => Set<PageAction>();
         public DbSet<RolePageAction> RolePageAction => Set<RolePageAction>();
+        public DbSet<UserPageAction> UserPageAction => Set<UserPageAction>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

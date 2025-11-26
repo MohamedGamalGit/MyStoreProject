@@ -80,8 +80,9 @@ namespace Services.Services
 
         public async Task<IEnumerable<UserViewModel>> GetAllAsync()
         {
-            var users = await _userRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<UserViewModel>>(users);
+            var users = await _context.Users.Include(x=>x.UserRoles).ThenInclude(x=>x.Role).ToListAsync();
+
+            return _mapper.Map<IEnumerable<UserViewModel>>(users.ToList());
         }
 
         public async Task<UserViewModel> Register(UserCreateVM dto)
@@ -100,7 +101,21 @@ namespace Services.Services
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
+            if (dto.UserRoles != null && dto.UserRoles.Any())
+            {
+                foreach (var r in dto.UserRoles)
+                {
+                    var userRole = new UserRole
+                    {
+                        UserId = user.Id,
+                        RoleId = r.Id??new Guid()
+                    };
 
+                    await _context.UserRoles.AddAsync(userRole);
+                }
+
+                await _context.SaveChangesAsync();
+            }
             return _mapper.Map<UserViewModel>(user);
         }
         //public async Task<User> FindAsync(Guid id)

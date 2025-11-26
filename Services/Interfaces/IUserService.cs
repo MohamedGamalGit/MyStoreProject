@@ -14,5 +14,6 @@ namespace Services.Interfaces
         Task<UserViewModel> Register(UserCreateVM user);
         Task<IEnumerable<User>> FindAsync(System.Linq.Expressions.Expression<Func<User, bool>> predicate);
         Task UpdateUserAsync(User user);
+        Task<IEnumerable<UserViewModel>> GetAllAsync();
     }
 }

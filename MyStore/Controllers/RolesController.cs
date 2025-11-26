@@ -94,6 +94,7 @@ namespace MyStore.Controllers
                 .Select(r => new
                 {
                     r.Id,
+                    RoleName= r.Name,
                     r.Name
                 })
                 .ToListAsync();

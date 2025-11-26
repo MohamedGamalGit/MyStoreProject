@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Models;
+using MyStore.Attributes;
 using Repositories.IGenericRepository;
 using Services.Interfaces;
 using Services.Services;
@@ -62,12 +63,15 @@ namespace MyStore.Controllers
 
         }
         [HttpGet, Route("getCategories")]
+        [HasPermission(Permissions.Categories.View)]
+
         public async Task<IActionResult> GetCategories()
         {
             var Categories = await _CategoryRepository.GetAllAsync();
             return Ok(Categories);
         }
         [HttpPost("getCategoriesWithagination")]
+        [HasPermission(Permissions.Categories.View)]
         public async Task<ActionResult<Pagination<Category>>> GetCategoriesWithagination([FromBody] PaginationVM model)
         {
             var categories= await _CategoryRepository.GetAllAsync();

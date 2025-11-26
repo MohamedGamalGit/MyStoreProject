@@ -1,4 +1,5 @@
 ﻿using Commen.ViewModels;
+using Models.Models.Permission;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,6 +22,8 @@ namespace Models.Models
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public ICollection<UserPageAction> UserPageActions { get; set; } = new List<UserPageAction>();
+
 
     }
 }

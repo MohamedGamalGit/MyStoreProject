@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Models;
 using MyStore.Attributes;
+using Repositories.IGenericRepository;
 using Services.Interfaces;
 
 namespace MyStore.Controllers
@@ -16,15 +17,17 @@ namespace MyStore.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IGenericRepository<Category> _CategoryRepository;
         private readonly StoreDbContext _context;
-        public ProductsController(IProductService productService, StoreDbContext contex)
+        public ProductsController(IProductService productService, StoreDbContext contex, IGenericRepository<Category> CategoryRepository)
         {
             _productService = productService;
             _context = contex;
+            _CategoryRepository = CategoryRepository;
         }
 
         [HttpPost, Route("addProduct")]
-        [HasPermission("Products.Create")]
+        [HasPermission(Permissions.Products.Create)]
         public async Task<IActionResult> AddProduct([FromBody]ProductAddVM productAddVM)
         {
             await _productService.AddProduct(productAddVM);
@@ -32,7 +35,7 @@ namespace MyStore.Controllers
         }
 
         [HttpGet, Route("getProducts")]
-        [HasPermission("Products.View")]
+        [HasPermission(Permissions.Products.View)]
         public async Task<IActionResult> GetProducts()
         {
             try
@@ -83,6 +86,14 @@ namespace MyStore.Controllers
             };
 
             return Ok(pagination);
+        }
+
+        [HttpGet("getNumberOfPeoductsAndCategories")]
+        public async Task<IActionResult> GetNumberOfPeoductsAndCategories()
+        {
+            var products = await _productService.GetAllProducts();
+            var categories = await _CategoryRepository.GetAllAsync();
+            return Ok(new { NumberOfProducts = products.Count, NumberOfCategories = categories.Count() });
         }
     }
 }

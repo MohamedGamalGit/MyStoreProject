@@ -54,6 +54,12 @@ namespace MyStore.Controllers
             var user = await _userService.Register(dto);
             return Ok(user); // ممكن ترجع UserViewModel بدون PasswordHash
         }
+        [HttpGet("getAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var user = await _userService.GetAllAsync();
+            return Ok(user); // ممكن ترجع UserViewModel بدون PasswordHash
+        }
 
         [HttpPost("refresh-token")]
         public async Task<LoginResponse> RefreshToken([FromBody] TokenRequest request)

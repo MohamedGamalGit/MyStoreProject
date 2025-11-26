@@ -85,32 +85,55 @@ namespace Services.Services
             };
         }
 
+        //public async Task<List<string>> GetUserPermissionsAsync(Guid userId)
+        //{
+        //    // 1) Get user + his roles
+        //    var user = await _ctx.Users
+        //        .Include(u => u.UserRoles)
+        //        .ThenInclude(ur => ur.Role)
+        //        .FirstOrDefaultAsync(u => u.Id == userId);
+
+        //    if (user == null)
+        //        return new List<string>();
+
+        //    // Extract all Role IDs
+        //    var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
+
+        //    // 2) Get permissions related to these roles
+        //    var permissions = await _ctx.RolePageAction
+        //        .Where(rp => roleIds.Contains(rp.RoleId))
+        //        .Include(rp => rp.PageAction)
+        //            .ThenInclude(pa => pa.Page)
+        //        .Include(rp => rp.PageAction)
+        //            .ThenInclude(pa => pa.ActionEntity)
+        //        .Select(rp => rp.PageAction.Page.Key + "." + rp.PageAction.ActionEntity.Key)
+        //        .ToListAsync();
+
+        //    return permissions;
+        //}
         public async Task<List<string>> GetUserPermissionsAsync(Guid userId)
         {
-            // 1) Get user + his roles
-            var user = await _ctx.Users
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                return new List<string>();
-
-            // Extract all Role IDs
-            var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
-
-            // 2) Get permissions related to these roles
-            var permissions = await _ctx.RolePageAction
-                .Where(rp => roleIds.Contains(rp.RoleId))
-                .Include(rp => rp.PageAction)
-                    .ThenInclude(pa => pa.Page)
-                .Include(rp => rp.PageAction)
-                    .ThenInclude(pa => pa.ActionEntity)
-                .Select(rp => rp.PageAction.Page.Key + "." + rp.PageAction.ActionEntity.Key)
+            // 1️⃣ صلاحيات من الـ Roles
+            var roleIds = await _ctx.UserRoles
+                .Where(ur => ur.UserId == userId)
+                .Select(ur => ur.RoleId)
                 .ToListAsync();
 
-            return permissions;
+            var rolePermissions = await _ctx.RolePageAction
+                .Where(rp => roleIds.Contains(rp.RoleId))
+                .Select(rp => rp.PageAction.Key)
+                .ToListAsync();
+
+            // 2️⃣ صلاحيات خاصة بالمستخدم
+            var userPermissions = await _ctx.UserPageAction
+                .Where(up => up.UserId == userId)
+                .Select(up => up.PageAction.Key)
+                .ToListAsync();
+
+            // 3️⃣ دمجهم مع إزالة التكرار
+            return rolePermissions.Union(userPermissions).ToList();
         }
+
 
         public async Task<bool> UserHasPermissionAsync(Guid userId, string permissionKey)
         {
