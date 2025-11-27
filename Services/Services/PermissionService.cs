@@ -120,10 +120,7 @@ namespace Services.Services
                 .Select(ur => ur.RoleId)
                 .ToListAsync();
 
-            if (!userRoleIds.Any())
-                return false;
-
-            // 2️⃣ جلب PageAction المرتبطة بالأدوار فقط
+            // 2️⃣ جلب PageAction المرتبطة بالأدوار
             var rolePageActions = await _ctx.RolePageAction
                 .Where(rp => userRoleIds.Contains(rp.RoleId))
                 .Select(rp => new
@@ -132,14 +129,27 @@ namespace Services.Services
                     ActionKey = rp.PageAction.ActionEntity!.Key
                 })
                 .AsNoTracking()
-                .ToListAsync(); // ✅ هنا await صحيح
+                .ToListAsync();
 
-            // 3️⃣ تحقق من الصلاحية على ال Client
+            // 3️⃣ جلب PageAction الخاصة بالمستخدم نفسه
+            var userPageActions = await _ctx.UserPageAction
+                .Where(upa => upa.UserId == userId)
+                .Select(upa => new
+                {
+                    PageKey = upa.PageAction!.Page!.Key,
+                    ActionKey = upa.PageAction.ActionEntity!.Key
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            // 4️⃣ دمج الاثنين والتحقق من الصلاحية
             bool hasPermission = rolePageActions
+                .Concat(userPageActions)
                 .Any(r => $"{r.PageKey}.{r.ActionKey}" == permissionKey);
 
             return hasPermission;
         }
+
         public async Task<List<RoleWithPermissionsDto>> GetUserRolesWithPermissionsAsync(Guid userId)
         {
             return await _ctx.UserRoles
