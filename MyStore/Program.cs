@@ -18,6 +18,11 @@ using Models.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "MyStore_";
+});
 
 
 builder.Services.AddCors(options =>

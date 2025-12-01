@@ -4,26 +4,31 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Models.Models;
 using MyStore.Attributes;
 using Repositories.IGenericRepository;
 using Services.Interfaces;
+using System.Text.Json;
 
 namespace MyStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
         private readonly IGenericRepository<Category> _CategoryRepository;
         private readonly StoreDbContext _context;
-        public ProductsController(IProductService productService, StoreDbContext contex, IGenericRepository<Category> CategoryRepository)
+        private readonly IDistributedCache _cache;
+
+        public ProductsController(IProductService productService, StoreDbContext contex, IGenericRepository<Category> CategoryRepository, IDistributedCache cache)
         {
             _productService = productService;
             _context = contex;
             _CategoryRepository = CategoryRepository;
+            _cache = cache;
         }
 
         [HttpPost, Route("addProduct")]
@@ -54,6 +59,71 @@ namespace MyStore.Controllers
             }
             
         }
+        [HttpGet, Route("getProductsWithCash")]
+        //[HasPermission(Permissions.Products.View)]
+        public async Task<IActionResult> getProductsWithCash()
+        {
+            string cacheKey = "products_all";
+            List<ProductAddVM> productDtos;
+
+            try
+            {
+                // محاولة قراءة البيانات من الكاش
+                var cachedData = await _cache.GetStringAsync(cacheKey);
+                if (!string.IsNullOrEmpty(cachedData))
+                {
+                    productDtos = JsonSerializer.Deserialize<List<ProductAddVM>>(cachedData);
+                    return Ok(new { Source = "Cache", Data = productDtos });
+                }
+            }
+            catch (StackExchange.Redis.RedisConnectionException redisEx)
+            {
+                // Redis غير متاح، ممكن تسجيل الخطأ بدون ايقاف التطبيق
+                Console.WriteLine($"Redis unavailable: {redisEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                // أي خطأ آخر في الكاش
+                Console.WriteLine($"Cache error: {ex.Message}");
+            }
+
+            try
+            {
+                // جلب البيانات من قاعدة البيانات
+                productDtos = await _context.Product
+                                            .Include(p => p.Category)
+                                            .Select(p => new ProductAddVM
+                                            {
+                                                Id = p.Id,
+                                                Name = p.Name,
+                                                Price = p.Price,
+                                            })
+                                            .ToListAsync();
+
+                // محاولة تخزين البيانات في الكاش لو Redis شغال
+                try
+                {
+                    var serializedData = JsonSerializer.Serialize(productDtos);
+                    await _cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                    });
+                }
+                catch (Exception cacheEx)
+                {
+                    Console.WriteLine($"Failed to set cache: {cacheEx.Message}");
+                }
+
+                return Ok(new { Source = "Database", Data = productDtos });
+            }
+            catch (Exception dbEx)
+            {
+                // لو فيه خطأ في قاعدة البيانات
+                return StatusCode(500, $"حدث خطأ في جلب البيانات: {dbEx.Message}");
+            }
+        }
+
+
         [HttpGet, Route("getProductById/{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {

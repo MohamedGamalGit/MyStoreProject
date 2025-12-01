@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Commen.ViewModels;
+using Commen.ViewModels.Employees;
 using Commen.ViewModels.RolesVM;
 using Models.Models;
 using Models.Models.Permission;
@@ -34,6 +35,8 @@ namespace Services.AutoMapper
             CreateMap<Role, RoleAddVM>().ReverseMap();
             CreateMap<RolePageAction, RoleAssignDto>().ReverseMap();
             CreateMap<Page, PageDto>().ReverseMap();
+            CreateMap<Employee, EmployeeVM>().ReverseMap();
+            CreateMap<Employee, EmployeeAddVM>().ReverseMap();
         }
     }
 }

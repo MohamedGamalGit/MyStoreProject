@@ -17,7 +17,7 @@ namespace Infrastructure.Configrations
             builder.HasMany(c => c.Products)
                .WithOne(p => p.Category)
                .HasForeignKey(p => p.CategoryId)
-               .OnDelete(DeleteBehavior.Cascade);
+               .OnDelete(DeleteBehavior.SetNull);
             builder.Property(x=>x.Name).HasMaxLength(300).IsRequired();
 
 
