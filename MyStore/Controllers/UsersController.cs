@@ -1,8 +1,12 @@
-﻿using Commen.Helpers;
+﻿using Commen.Extensions;
+using Commen.Helpers;
 using Commen.ViewModels;
+using Commen.ViewModels.Permissions;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.Models;
 using Services.Interfaces;
 using Services.Services;
@@ -12,17 +16,20 @@ namespace MyStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly JwtHelper _jwtHelper;
         private readonly IActivityLogService _activityLogService;
+        private readonly StoreDbContext _context;
 
-        public UsersController(IUserService userService, JwtHelper jwtHelper, IActivityLogService activityLogService)
+        public UsersController(IUserService userService, JwtHelper jwtHelper, IActivityLogService activityLogService, StoreDbContext context)
         {
             _userService = userService;
             _jwtHelper = jwtHelper;
             _activityLogService = activityLogService;
+            _context = context;
         }
         [AllowAnonymous]
         [HttpPost("login")]
@@ -83,7 +90,41 @@ namespace MyStore.Controllers
             };
         }
 
-        
+        [HttpGet("menu")]
+        public async Task<IActionResult> GetUserMenu()
+        {
+            var userId = User.GetUserId(); // from JWT
+
+            // 1) جميع PageActions للـ user من الـ roles + الـ direct assigned
+            var userRolePermissions = await _context.RolePageAction
+                .Where(rp => rp.Role.UserRoles.Any(u => u.UserId == userId))
+            .Select(rp => rp.PageActionId)
+            .ToListAsync();
+
+            var userDirectPermissions = await _context.UserPageAction
+                .Where(up => up.UserId == userId)
+                .Select(up => up.PageActionId)
+                .ToListAsync();
+
+            var allUserPermissions = userRolePermissions
+                .Union(userDirectPermissions)
+                .ToList();
+
+            // 2) الصفحات التي يمتلك المستخدم أحد Actions الخاصة بها
+            var pages = await _context.Page
+                .Where(p => p.PageActions.Any(pa => allUserPermissions.Contains(pa.Id)))
+                .Select(p => new MenuPageDto
+                {
+                    Key = p.Key,
+                    DisplayName = p.DisplayName,
+                    Route = "/" + p.Key,
+                    Icon = "menu" // أو خزّن icon في الـ DB لو تريد
+                })
+                .ToListAsync();
+
+            return Ok(pages);
+        }
+
 
     }
     public class TokenRequest
