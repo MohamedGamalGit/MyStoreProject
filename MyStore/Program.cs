@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using MyStore.Middlewares;
 using System.Text.Json;
 using Models.Seed;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "MyStore_";
 });
+builder.Services.AddHangfire(config =>
+{
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddHangfireServer();
 
 
 builder.Services.AddCors(options =>
@@ -49,7 +56,7 @@ builder.Services.AddSingleton(new JwtHelper(
 // ------------------- DbContext -------------------
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<StoreDbContext>(options =>
-    options.UseSqlServer(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+    options.UseSqlServer(connectionString));
 
 // ------------------- Generic Repository -------------------
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -58,6 +65,10 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile)); // MappingProfile ?? ??? Profile class ?????
 builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITokenCleanupService, TokenCleanupService>();
+
+
 
 // ------------------- Controllers -------------------
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -121,5 +132,10 @@ app.UseCors("AllowFrontend");
 app.UseJwtAuthentication();
 
 app.MapControllers();
+app.UseHangfireDashboard("/hangfire");
+RecurringJob.AddOrUpdate<ITokenCleanupService>(
+    x => x.CleanupExpiredTokensAsync(),
+    Cron.MinuteInterval(2)
+);
 
 app.Run();

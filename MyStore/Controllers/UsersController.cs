@@ -2,6 +2,7 @@
 using Commen.Helpers;
 using Commen.ViewModels;
 using Commen.ViewModels.Permissions;
+using Hangfire;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +60,9 @@ namespace MyStore.Controllers
         public async Task<IActionResult> Register(UserCreateVM dto)
         {
             var user = await _userService.Register(dto);
+            BackgroundJob.Enqueue<IEmailService>(emailService =>
+             emailService.SendWelcomeEmailAsync(dto.Email, dto.Email));
+
             return Ok(user); // ممكن ترجع UserViewModel بدون PasswordHash
         }
         [HttpGet("getAllUsers")]
@@ -80,7 +84,7 @@ namespace MyStore.Controllers
             var newRefreshToken = GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(1);
             await _userService.UpdateUserAsync(user);
 
             return new LoginResponse

@@ -65,7 +65,7 @@ namespace Services.Services
 
             // تخزين الـ Refresh Token في قاعدة البيانات
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // مثال: 7 أيام
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(1); // مثال: 7 أيام
             _userRepository.Update(user);
             await _userRepository.SaveChangesAsync();
             // إعداد Response
