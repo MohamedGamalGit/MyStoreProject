@@ -21,25 +21,34 @@ namespace Services.Services
         public async Task LogAsync(string userId, string userName, string action,
                                    string entityName, string entityId, string description,string path,string method,string ip,int status,int executionTime,List<string> roles )
         {
-            var log = new ActivityLog
+            try
             {
-                UserId = userId,
-                UserName = userName,
-                Action = action,
-                EntityName = entityName,
-                EntityId = entityId,
-                Description = description,
-                Path = path,
-                Method = method,
-                IpAddress = ip,
-                StatusCode = status,
-                Timestamp = executionTime,
-                Roles= roles
+                var log = new ActivityLog
+                {
+                    UserId = userId,
+                    UserName = userName,
+                    Action = action,
+                    EntityName = entityName,
+                    EntityId = entityId,
+                    Description = description,
+                    Path = path,
+                    Method = method,
+                    IpAddress = ip,
+                    StatusCode = status,
+                    Timestamp = executionTime,
+                    Roles = roles
 
-            };
+                };
 
-            _context.ActivityLogs.Add(log);
-            await _context.SaveChangesAsync();
+                _context.ActivityLogs.Add(log);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception EX)
+            {
+
+                throw;
+            }
+            
         }
     }
 }

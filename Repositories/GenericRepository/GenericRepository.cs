@@ -57,7 +57,17 @@ namespace Repositories.GenericRepository
 
         public async Task<int> SaveChangesAsync()
         {
-            return await _context.SaveChangesAsync();
+            try
+            {
+                return await _context.SaveChangesAsync();
+
+            }
+            catch (Exception)
+            {
+
+                _context.ChangeTracker.Clear();
+                throw;
+            }
         }
         public async Task<T?> GetSingleWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {

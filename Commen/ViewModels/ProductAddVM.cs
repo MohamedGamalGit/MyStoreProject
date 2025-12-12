@@ -14,5 +14,6 @@ namespace Commen.ViewModels
         public int Quantity { get; set; }
         public int CategoryId { get; set; }
         public string ImageUrl { get; set; }
+        public CategoryAddVM Category { get; set; }
     }
 }

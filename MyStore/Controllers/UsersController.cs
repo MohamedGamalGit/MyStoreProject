@@ -1,6 +1,7 @@
 ﻿using Commen.Extensions;
 using Commen.Helpers;
 using Commen.ViewModels;
+using Commen.ViewModels.Employees;
 using Commen.ViewModels.Permissions;
 using Hangfire;
 using Infrastructure.Data;
@@ -17,7 +18,6 @@ namespace MyStore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -66,11 +66,21 @@ namespace MyStore.Controllers
             return Ok(user); // ممكن ترجع UserViewModel بدون PasswordHash
         }
         [HttpGet("getAllUsers")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<ActionResult<ResponseVM<UserCreateVM>>> GetAllUsers()
         {
-            var user = await _userService.GetAllAsync();
-            return Ok(user); // ممكن ترجع UserViewModel بدون PasswordHash
-        }
+            var users = await _userService.GetAllAsync();
+            return Ok(new ResponseVM<UserCreateVM>()
+            {
+                Code = 200,
+                Message = "Success",
+                Data = users.Select(u => new UserCreateVM
+                {
+                    Username = u.UserName,
+                    Email = u.Email
+                    // لا ترجع PasswordHash
+                }).ToList()
+            });
+		}
 
         [HttpPost("refresh-token")]
         public async Task<LoginResponse> RefreshToken([FromBody] TokenRequest request)
@@ -84,7 +94,7 @@ namespace MyStore.Controllers
             var newRefreshToken = GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(1);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
             await _userService.UpdateUserAsync(user);
 
             return new LoginResponse

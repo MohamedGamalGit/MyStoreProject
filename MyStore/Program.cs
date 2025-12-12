@@ -36,7 +36,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // URL ??? Angular app
+        policy.WithOrigins("http://localhost:4200","http://localhost:18077") // URL ??? Angular app
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -135,7 +135,7 @@ app.MapControllers();
 app.UseHangfireDashboard("/hangfire");
 RecurringJob.AddOrUpdate<ITokenCleanupService>(
     x => x.CleanupExpiredTokensAsync(),
-    Cron.MinuteInterval(2)
+    Cron.Monthly(2)
 );
 
 app.Run();

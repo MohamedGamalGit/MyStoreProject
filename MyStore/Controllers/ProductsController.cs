@@ -1,4 +1,5 @@
-﻿using Commen.ViewModels;
+﻿using AutoMapper;
+using Commen.ViewModels;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,13 +23,15 @@ namespace MyStore.Controllers
         private readonly IGenericRepository<Category> _CategoryRepository;
         private readonly StoreDbContext _context;
         private readonly IDistributedCache _cache;
+        private readonly IMapper _mapper;
 
-        public ProductsController(IProductService productService, StoreDbContext contex, IGenericRepository<Category> CategoryRepository, IDistributedCache cache)
+        public ProductsController(IProductService productService, StoreDbContext contex, IGenericRepository<Category> CategoryRepository, IDistributedCache cache, IMapper mapper)
         {
             _productService = productService;
             _context = contex;
             _CategoryRepository = CategoryRepository;
             _cache = cache;
+            _mapper = mapper;
         }
 
         [HttpPost, Route("addProduct")]
@@ -50,7 +53,7 @@ namespace MyStore.Controllers
                 var result = _context.Product.Include(x => x.Category)
                              .GroupBy(c => c.Category)
                              .ToList();
-                return Ok(products);
+                return Ok(_mapper.Map<List<ProductAddVM>>(products) );
             }
             catch (Exception ex)
             {
