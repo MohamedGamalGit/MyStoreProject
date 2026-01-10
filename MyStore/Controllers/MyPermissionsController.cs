@@ -18,7 +18,7 @@ public class MyPermissionsController : ControllerBase
         if (!Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
-        var roles = await _svc.GetUserRolesWithPermissionsAsync(userId);
+        var roles = await _svc.GetRolesWithPermissionsAsync();
 
         return Ok(new
         {

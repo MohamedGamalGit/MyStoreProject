@@ -95,7 +95,8 @@ namespace MyStore.Controllers
                 {
                     r.Id,
                     RoleName= r.Name,
-                    r.Name
+                    r.Name,
+                    RoleId=r.Id
                 })
                 .ToListAsync();
 

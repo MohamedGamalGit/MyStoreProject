@@ -165,6 +165,20 @@ namespace Services.Services
                                 .ToListAsync();
 
         }
+        public async Task<List<RoleWithPermissionsDto>> GetRolesWithPermissionsAsync()
+        {
+            return await _ctx.UserRoles
+                                .Select(ur => new RoleWithPermissionsDto
+                                {
+                                    RoleId = ur.Role.Id,
+                                    RoleName = ur.Role.Name,
+                                    Permissions = ur.Role.RolePageActions
+                                        .Select(rpa => rpa.PageAction.Page.DisplayName + "." + rpa.PageAction.ActionEntity.DisplayName)
+                                        .ToList()
+                                })
+                                .ToListAsync();
+
+        }
 
         public async Task AddPageAsync(PageDto dto)
         {

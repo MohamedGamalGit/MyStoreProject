@@ -10,6 +10,7 @@ namespace Commen.ViewModels.RolesVM
     {
         public string? Name { get; set; } = null!; // Admin, User, Guest
         public string? RoleName { get; set; }  // Admin, User, Guest
+        public Guid? RoleId { get; set; }  // Admin, User, Guest
         public Guid? Id { get; set; }
     }
 }

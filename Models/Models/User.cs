@@ -15,6 +15,8 @@ namespace Models.Models
 
         public Guid Id { get; set; }
         public string Username { get; set; }=null!;
+        public string NameAR { get; set; }=null!;
+        public string NameEN { get; set; }=null!;
         public string Email { get; set; }=string.Empty;
         public string PasswordHash { get; set; }= null!;
         public string Salt { get; set; }

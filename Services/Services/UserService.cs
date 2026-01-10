@@ -118,11 +118,11 @@ namespace Services.Services
             }
             return _mapper.Map<UserViewModel>(user);
         }
-        //public async Task<User> FindAsync(Guid id)
-        //{
-        //    var user = await _userRepository.GetByIdAsync(id);
-        //    return user;
-        //}
+        public async Task<User> GetByUserName(string userName)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x=>x.Username==userName);
+            return user;
+        }
         public async Task<IEnumerable<User>> FindAsync(System.Linq.Expressions.Expression<Func<User, bool>> predicate)
         {
             var users = await _userRepository.FindAsync(predicate);

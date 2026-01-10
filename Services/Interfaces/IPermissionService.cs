@@ -21,6 +21,7 @@ namespace Services.Interfaces
         Task<bool> UserHasPermissionAsync(Guid userId, string permissionKey);
         Task AddPageAsync(PageDto dto);
         Task<List<RoleWithPermissionsDto>> GetUserRolesWithPermissionsAsync(Guid userId);
+        Task<List<RoleWithPermissionsDto>> GetRolesWithPermissionsAsync();
 
     }
 }

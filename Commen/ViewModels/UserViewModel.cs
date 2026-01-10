@@ -10,6 +10,8 @@ namespace Commen.ViewModels
     {
         public Guid Id { get; set; }
         public string UserName { get; set; }
+        public string NameAR { get; set; }
+        public string NameEN { get; set; }
         public string Email { get; set; }
         public List<string>? UserRoles { get; set; }
     }

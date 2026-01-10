@@ -32,8 +32,13 @@ namespace Services.AutoMapper
                 .ReverseMap();
             CreateMap<Product, ProductAddVM>().ReverseMap();
             CreateMap<Category, CategoryAddVM>().ReverseMap();
-            CreateMap<Role, RoleAddVM>().ReverseMap();
-            CreateMap<RolePageAction, RoleAssignDto>().ReverseMap();
+			CreateMap<Role, RoleAddVM>()
+				.ForMember(dest => dest.RoleId,
+						   opt => opt.MapFrom(src => src.Id))
+				.ReverseMap()
+				.ForMember(dest => dest.Id,
+						   opt => opt.MapFrom(src => src.RoleId));
+			CreateMap<RolePageAction, RoleAssignDto>().ReverseMap();
             CreateMap<Page, PageDto>().ReverseMap();
             CreateMap<Employee, EmployeeVM>().ReverseMap();
             CreateMap<Employee, EmployeeAddVM>().ReverseMap();
