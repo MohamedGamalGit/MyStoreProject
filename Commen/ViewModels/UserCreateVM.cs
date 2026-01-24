@@ -13,9 +13,10 @@ namespace Commen.ViewModels
 		public string Username { get; set; } = null!;
         public string? Password { get; set; }
         public string Email { get; set; } = null!;
-        public string Name { get; set; } = null!;
-        public string NameAR { get; set; } = null!;
-        public string NameEN { get; set; } = null!;
+        public string? Name { get; set; }
+        public string? NameAR { get; set; }
+        public string? NameEN { get; set; }
+        public List<string>? RoleName { get; set; }
         public List<RoleAddVM>? UserRoles { get; set; } = new List<RoleAddVM>();
     }
 }

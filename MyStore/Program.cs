@@ -16,6 +16,7 @@ using MyStore.Middlewares;
 using System.Text.Json;
 using Models.Seed;
 using Hangfire;
+using MyStore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddHangfire(config =>
 
 builder.Services.AddHangfireServer();
 
+builder.Services.AddAdvancedRateLimiting();
 
 builder.Services.AddCors(options =>
 {
@@ -130,8 +132,13 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 // Authentication must come before Authorization
 app.UseJwtAuthentication();
+app.UseAdvancedRateLimiting();
 
-app.MapControllers();
+app.MapControllers()
+    .RequireRateLimiting("PerIpAndUser");
+
+
+
 app.UseHangfireDashboard("/hangfire");
 RecurringJob.AddOrUpdate<ITokenCleanupService>(
     x => x.CleanupExpiredTokensAsync(),

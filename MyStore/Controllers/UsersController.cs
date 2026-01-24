@@ -87,7 +87,8 @@ namespace MyStore.Controllers
 					Id = u.Id,
 					Username = u.UserName,
 					Email = u.Email,
-					Name= lang == "ar" ? u.NameAR : u.NameEN,	
+					Name= lang == "ar" ? u.NameAR : u.NameEN,
+                    RoleName = u.UserRoles,
                     // لا ترجع PasswordHash
                 }).ToList()
 			});

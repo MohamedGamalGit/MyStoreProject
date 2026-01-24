@@ -81,7 +81,7 @@ namespace Services.Services
         public async Task<IEnumerable<UserViewModel>> GetAllAsync()
         {
             var users = await _context.Users.Include(x=>x.UserRoles).ThenInclude(x=>x.Role).ToListAsync();
-
+            //users.FirstOrDefault().UserRoles.Select(x=>x.Role.Name);
             return _mapper.Map<IEnumerable<UserViewModel>>(users.ToList());
         }
 
@@ -96,6 +96,8 @@ namespace Services.Services
                 Id = Guid.NewGuid(),
                 Username = dto.Username,
                 PasswordHash = hash,
+                NameAR=dto.Username,
+                NameEN=dto.Username,
                 Salt = salt
             };
 
